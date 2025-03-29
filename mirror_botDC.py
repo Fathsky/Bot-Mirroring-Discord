@@ -33,31 +33,34 @@ def chat_gemini(prompt):
     conversation_history.append({"role": "user", "content": prompt})
 
     data = {
-        "inputs": [{"text": prompt}],  # Use 'text' for input content
+        "inputs": [{"text": prompt}],
         "history": conversation_history
     }
 
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
-        response.raise_for_status()  # Check for errors in response
 
-        # Debug response
-        print("Response:", response.json())  # This will print the entire API response
-        
+        # Debug: log response
+        print(f"Response Status Code: {response.status_code}")  # Show status code
+        print(f"Response Text: {response.text}")  # Show the raw response text
+
+        # Cek apakah response statusnya 200 (OK)
+        response.raise_for_status()  # Raise error jika status bukan 200 OK
         result = response.json()
 
-        # Get the response from the API
-        bot_response = result.get("candidates", [{}])[0].get("content", "No response found")
+        # Debug: log the JSON response
+        print(f"JSON Response: {result}")
 
-        # Save bot's response to history for continuity
+        # Ambil jawaban dari response
+        bot_response = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "Gak tau nih 😅")
+
+        # Simpan jawaban ke history biar percakapan nyambung
         conversation_history.append({"role": "bot", "content": bot_response})
 
         return bot_response
 
     except requests.exceptions.RequestException as e:
         return f"⚠️ Error: {str(e)}"
-
-
 
 # Event untuk mirroring semua pesan dalam server
 @bot.event
