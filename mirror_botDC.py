@@ -27,7 +27,7 @@ chat_history = {}
 # Simpan ID pesan terakhir dari bot
 bot_last_messages = {}
 
-# Fungsi untuk komunikasi dengan Gemini AI / umpan balik ketika User Reply chat Bot nya
+# Fungsi untuk komunikasi dengan Gemini AI
 def chat_gemini(prompt, user_id):
     if user_id not in chat_history:
         chat_history[user_id] = []
@@ -45,7 +45,7 @@ def chat_gemini(prompt, user_id):
         response_text = result["candidates"][0]["content"]["parts"][0]["text"]
         
         chat_history[user_id].append(prompt)
-        chat_history[user_id].append(f"AI: {response_text}")
+        chat_history[user_id].append(response_text)
         
         if len(chat_history[user_id]) > 10:
             chat_history[user_id] = chat_history[user_id][-10:]
@@ -54,12 +54,12 @@ def chat_gemini(prompt, user_id):
     else:
         return f"Error: {response.status_code} - {response.text}"
 
-# ketika bot bisa login server di local
+# Event ketika bot berhasil login
 @bot.event
 async def on_ready():
-    print(f'Bot {bot.user} udah online!')
+    print(f'Bot {bot.user} sudah online!')
 
-# buat mirror semua chat yang ada di dalam server
+# Event untuk mirroring semua pesan dalam server
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -68,19 +68,30 @@ async def on_message(message):
         return
     
     # Cek jika pesan adalah reply ke bot
-    if message.reference and message.reference.message_id:
-        # Cek apakah reply ke pesan bot
-        if message.reference.message_id == bot_last_messages.get(message.channel.id):
-            # Generate respons dari AI
-            jawaban = chat_gemini(message.content, str(message.author.id))
-            sent_message = await message.channel.send(jawaban)
-            # Update ID pesan terakhir bot
-            bot_last_messages[message.channel.id] = sent_message.id
-            return
+    if message.reference:
+        try:
+            # Ambil pesan yang di-reply
+            replied_msg = await message.channel.fetch_message(message.reference.message_id)
+            # Cek apakah pesan yang di-reply adalah pesan dari bot
+            if replied_msg.author == bot.user:
+                # Generate respons dari AI
+                jawaban = chat_gemini(message.content, str(message.author.id))
+                sent_message = await message.channel.send(jawaban)
+                # Update ID pesan terakhir bot
+                bot_last_messages[message.channel.id] = sent_message.id
+                return
+        except discord.NotFound:
+            pass  # Pesan yang di-reply tidak ditemukan
     
     # Cek apakah user bertanya nama bot
     if "nama kamu siapa" in message.content.lower():
-        sent_message = await message.channel.send("Namaku adalah Fatih Bot!")
+        sent_message = await message.channel.send("Nama gue adalah Johny Sins, Sang aktor bintang Pornografi terkenal Diseluruh dunia, HAHAHAHAHA 😜!")
+        bot_last_messages[message.channel.id] = sent_message.id
+    
+    # Cek apakah user bertanya tentang developer
+    if any(phrase in message.content.lower() for phrase in ["siapa yang develop", "siapa yang buat", "siapa developermu", "siapa yang bikin"]):
+        developer_id = "742535420461711481"
+        sent_message = await message.channel.send(f"Yang develop aku namanya Fatih <@!{developer_id}>")
         bot_last_messages[message.channel.id] = sent_message.id
 
     # Lanjutkan ke command bot lainnya
