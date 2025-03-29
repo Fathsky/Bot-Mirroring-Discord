@@ -34,11 +34,12 @@ async def on(ctx):
     nickname = ctx.author.display_name  
     await ctx.send(f"✅ CIEEEE AKTIFIN AKU, KANGEN YAAA? Halo, {nickname}! SEMOGA HARIMU BAIK BAIK AJA YA😊")
     
+# Command untuk menanggapi panggilan "hai"
 @bot.command()
 async def hai(ctx):
     global mirror_active
     mirror_active = False 
-    await ctx.send(f"Hai {ctx.author.display_name}, Ngapain manggil-manggil, urus sono pacar lo ! Oh ya lupa, Lo kan gapunya pacar HAHAHAHAHA")
+    await ctx.send(f"Hai {ctx.author.display_name}, Ngapain manggil-manggil, urus sono pacar lo! Oh ya lupa, Lo kan gapunya pacar HAHAHAHAHA")
 
 # Command untuk mematikan mirroring
 @bot.command()
@@ -51,6 +52,18 @@ async def off(ctx):
 @bot.event
 async def on_message(message):
     global mirror_active
+
+    if message.author == bot.user:
+        return  # Hindari bot mirror pesan sendiri
+
+    if message.content.startswith("!"):
+        await bot.process_commands(message)  # Pastikan command tetap bisa dijalankan
+        return  
+
+    if mirror_active:  # Cek apakah mirroring aktif
+        await message.channel.send(f"{message.author.display_name}: {message.content}")
+
+    await bot.process_commands(message)  # Pastikan command tetap bisa dijalankan
 
 # Jalankan bot
 bot.run(TOKEN)
