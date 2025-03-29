@@ -38,7 +38,8 @@ def chat_gemini(prompt):
 user_descriptions = {
     "fatih": "Fatih itu anaknya pendiam tapi aktif kok.",
     "rafi": "Rafi itu orangnya suka bercanda, tapi baik.",
-    "budi": "Budi jago coding, sering bantu temen-temennya."
+    "budi": "Budi jago coding, sering bantu temen-temennya.",
+    "muzan": "Muzan itu Si Agent Crypto, kerjaannya cuma Ngocok sama mikirin USDT sekarang lagi naik atau ngga ya HAHA"
 }
 
 # Fungsi untuk komunikasi dengan Gemini AI
