@@ -53,6 +53,19 @@ def chat_gemini(prompt):
     except requests.exceptions.RequestException as e:
         return f"⚠️ Error: {str(e)}"
 
+# Event untuk mirroring semua pesan dalam server
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    
+    # Cek apakah user bertanya nama bot
+    if "nama kamu siapa" in message.content.lower():
+        await message.channel.send("Namaku adalah Johny Sins!, Sang artis bintang Pornografi yang sangat Lincah dan juga Tampan")
+    
+    await bot.process_commands(message)
+
+
 # Event ketika bot berhasil login
 @bot.event
 async def on_ready():
