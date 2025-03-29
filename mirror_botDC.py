@@ -53,12 +53,6 @@ async def off(ctx):
 async def on_message(message):
     global mirror_active
     
-    # Hanya proses command jika pesan dimulai dengan prefix
-
-    # Mirroring aktif
-    if mirror_active:
-        await message.channel.send(f"{message.author.display_name}: {message.content}")
-
     # Pastikan bot tetap bisa menjalankan command lainnya
     await bot.process_commands(message)
 
