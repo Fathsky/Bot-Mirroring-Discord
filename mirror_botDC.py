@@ -33,7 +33,7 @@ def chat_gemini(prompt):
     conversation_history.append({"role": "user", "text": prompt})
 
     data = {
-        "contents": [{"parts": [{"text": prompt}]}],
+        "inputs": [{"content": prompt}],  # Memperbaiki format input
         "history": conversation_history
     }
 
@@ -63,7 +63,8 @@ async def on_message(message):
     if "nama kamu siapa" in message.content.lower():
         await message.channel.send("Namaku adalah Johny Sins!, Sang artis bintang Pornografi yang sangat Lincah dan juga Tampan")
     
-    await bot.process_commands(message)  # Pastikan command tetap bisa dijalankan
+    # Jangan lupa untuk memproses command bot setelah mirroring
+    await bot.process_commands(message)  
 
 # Event ketika bot berhasil login
 @bot.event
