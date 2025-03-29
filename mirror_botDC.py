@@ -14,6 +14,26 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# Fungsi untuk komunikasi dengan Gemini AI
+def chat_gemini(prompt):
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    data = {"contents": [{"parts": [{"text": prompt}]}]}
+    
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        
+        if response.status_code == 200:
+            result = response.json()
+            # Mengambil hasil dari API response
+            return result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "Tidak ada jawaban")
+        else:
+            return f"Error: {response.status_code} - {response.text}"
+    
+    except requests.exceptions.RequestException as e:
+        return f"Terjadi kesalahan saat menghubungi API: {str(e)}"
+
+
 # Simpan deskripsi nama user
 user_descriptions = {
     "fatih": "Fatih itu anaknya pendiam tapi aktif kok.",
