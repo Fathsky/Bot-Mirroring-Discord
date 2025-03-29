@@ -37,8 +37,7 @@ async def on(ctx):
 @bot.command()
 async def hai(ctx):
     global mirror_active
-    mirror_active = True
-    nickname = ctx.author.display_name  
+    mirror_active = False 
     await ctx.send(f"Hai {ctx.author.display_name}, Ngapain manggil-manggil, urus sono pacar lo ! Oh ya lupa, Lo kan gapunya pacar HAHAHAHAHA")
 
 # Command untuk mematikan mirroring
