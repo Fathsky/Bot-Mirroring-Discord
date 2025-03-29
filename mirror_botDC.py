@@ -30,28 +30,33 @@ def chat_gemini(prompt):
     headers = {"Content-Type": "application/json"}
 
     # Tambahkan ke history biar percakapan nyambung
-    conversation_history.append({"role": "user", "text": prompt})
+    conversation_history.append({"role": "user", "content": prompt})
 
     data = {
-        "inputs": [{"content": prompt}],  # Pastikan 'inputs' digunakan dengan benar
+        "inputs": [{"text": prompt}],  # Use 'text' for input content
         "history": conversation_history
     }
 
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
-        response.raise_for_status()  # Cek status code dan lempar error jika bukan 2xx
+        response.raise_for_status()  # Check for errors in response
+
+        # Debug response
+        print("Response:", response.json())  # This will print the entire API response
+        
         result = response.json()
 
-        # Ambil jawaban dari response API
-        bot_response = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "Gak tau nih 😅")
-        
-        # Simpan jawaban ke history biar percakapan nyambung
-        conversation_history.append({"role": "bot", "text": bot_response})
+        # Get the response from the API
+        bot_response = result.get("candidates", [{}])[0].get("content", "No response found")
+
+        # Save bot's response to history for continuity
+        conversation_history.append({"role": "bot", "content": bot_response})
 
         return bot_response
 
     except requests.exceptions.RequestException as e:
         return f"⚠️ Error: {str(e)}"
+
 
 
 # Event untuk mirroring semua pesan dalam server
