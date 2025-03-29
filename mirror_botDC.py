@@ -14,46 +14,31 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Simpan riwayat percakapan
-conversation_history = []
-
 # Simpan deskripsi nama user
 user_descriptions = {
     "fatih": "Fatih itu anaknya pendiam tapi aktif kok.",
     "rafi": "Rafi itu orangnya suka bercanda, tapi baik.",
-    "budi": "Budi jago coding, sering bantu temen-temennya.",
+    "budi": "Budi jago coding, sering bantu temen-temennya."
 }
 
-# Fungsi komunikasi dengan Gemini AI yang lebih fleksibel
+# Fungsi untuk komunikasi dengan Gemini AI
 def chat_gemini(prompt):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
-
-    # Tambahkan ke history biar percakapan nyambung
-    conversation_history.append({"role": "user", "content": prompt})
-
-    data = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "history": conversation_history
-    }
-
-    try:
-        response = requests.post(url, headers=headers, data=json.dumps(data))
-
-        # Cek apakah response statusnya 200 (OK)
-        response.raise_for_status()
+    data = {"contents": [{"parts": [{"text": prompt}]}]}
+    
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    
+    if response.status_code == 200:
         result = response.json()
+        return result["candidates"][0]["content"]["parts"][0]["text"]
+    else:
+        return f"Error: {response.status_code} - {response.text}"
 
-        # Ambil jawaban dari response
-        bot_response = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "Gak tau nih 😅")
-
-        # Simpan jawaban ke history biar percakapan nyambung
-        conversation_history.append({"role": "bot", "content": bot_response})
-
-        return bot_response
-
-    except requests.exceptions.RequestException as e:
-        return f"⚠️ Error: {str(e)}"
+# Event ketika bot berhasil login
+@bot.event
+async def on_ready():
+    print(f'Bot {bot.user} sudah online!')
 
 # Event untuk mirroring semua pesan dalam server
 @bot.event
@@ -61,26 +46,15 @@ async def on_message(message):
     if message.author == bot.user:
         return
     
-    # Cek kalau user reply pesan bot, biar nyambung obrolannya
-    if message.reference:
-        replied_message = await message.channel.fetch_message(message.reference.message_id)
-        if replied_message.author == bot.user:
-            response = chat_gemini(message.content)
-            await message.channel.send(response)
-            return
-
+    
     # Cek apakah user bertanya nama bot
     if "nama kamu siapa" in message.content.lower():
-        await message.channel.send("Namaku adalah Johny Sins!, Sang artis bintang terkenal yang lincah dan tampan 😎")
+        await message.channel.send("Namaku adalah Fatih Bot!")
 
-    await bot.process_commands(message)  # Pastikan command lain tetap jalan
+    # Lanjutkan ke command bot lainnya
+    await bot.process_commands(message)
 
-# Event ketika bot berhasil login
-@bot.event
-async def on_ready():
-    print(f'✅ Bot {bot.user} sudah online!')
-
-# Command untuk ngobrol dengan AI
+# Command untuk tanya AI
 @bot.command()
 async def tanya(ctx, *, pertanyaan):
     jawaban = chat_gemini(pertanyaan)
@@ -94,13 +68,6 @@ async def siapa(ctx, nama: str):
         await ctx.send(user_descriptions[nama])
     else:
         await ctx.send(f"Aku belum tahu tentang {nama}, kasih tahu aku dong!")
-
-# Command untuk user nambahin deskripsi sendiri
-@bot.command()
-async def tambahin(ctx, nama: str, *, deskripsi: str):
-    nama = nama.lower()
-    user_descriptions[nama] = deskripsi
-    await ctx.send(f"✅ Oke! Sekarang aku tahu bahwa {nama} itu {deskripsi}")
 
 # Jalankan bot
 bot.run(TOKEN)
