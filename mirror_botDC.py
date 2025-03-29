@@ -33,16 +33,16 @@ def chat_gemini(prompt):
     conversation_history.append({"role": "user", "text": prompt})
 
     data = {
-        "inputs": [{"content": prompt}],  # Memperbaiki format input
+        "inputs": [{"content": prompt}],  # Pastikan 'inputs' digunakan dengan benar
         "history": conversation_history
     }
 
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
-        response.raise_for_status()
+        response.raise_for_status()  # Cek status code dan lempar error jika bukan 2xx
         result = response.json()
 
-        # Ambil jawaban
+        # Ambil jawaban dari response API
         bot_response = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "Gak tau nih 😅")
         
         # Simpan jawaban ke history biar percakapan nyambung
@@ -52,6 +52,7 @@ def chat_gemini(prompt):
 
     except requests.exceptions.RequestException as e:
         return f"⚠️ Error: {str(e)}"
+
 
 # Event untuk mirroring semua pesan dalam server
 @bot.event
