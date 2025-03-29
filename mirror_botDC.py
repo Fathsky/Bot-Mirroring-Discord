@@ -56,14 +56,17 @@ async def on_message(message):
     if message.author == bot.user:
         return  # Hindari bot mirror pesan sendiri
 
+    # Hanya proses command jika pesan dimulai dengan prefix
     if message.content.startswith("!"):
         await bot.process_commands(message)  # Pastikan command tetap bisa dijalankan
         return  
 
-    if mirror_active:  # Cek apakah mirroring aktif
+    # Mirroring aktif
+    if mirror_active:
         await message.channel.send(f"{message.author.display_name}: {message.content}")
 
-    await bot.process_commands(message)  # Pastikan command tetap bisa dijalankan
+    # Pastikan bot tetap bisa menjalankan command lainnya
+    await bot.process_commands(message)
 
 # Jalankan bot
 bot.run(TOKEN)
