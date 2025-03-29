@@ -66,9 +66,6 @@ async def on_message(message):
     if message.author == bot.user:
         return
     
-    # Mirror pesan
-    await message.channel.send(f"{message.author.display_name}: {message.content}")
-    
     # Cek apakah user bertanya nama bot
     if "nama kamu siapa" in message.content.lower():
         await message.channel.send("Namaku adalah Johny Sins!")
