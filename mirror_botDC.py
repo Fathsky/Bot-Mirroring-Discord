@@ -52,14 +52,8 @@ async def off(ctx):
 @bot.event
 async def on_message(message):
     global mirror_active
-
-    if message.author == bot.user:
-        return  # Hindari bot mirror pesan sendiri
-
+    
     # Hanya proses command jika pesan dimulai dengan prefix
-    if message.content.startswith("!"):
-        await bot.process_commands(message)  # Pastikan command tetap bisa dijalankan
-        return  
 
     # Mirroring aktif
     if mirror_active:
