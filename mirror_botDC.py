@@ -1,60 +1,75 @@
 import discord
+from discord.ext import commands
+import requests
+import json
 import os
 from dotenv import load_dotenv
-from discord.ext import commands
 
-# Load environment variables
+# Load .env file
 load_dotenv()
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if TOKEN is None:
-    raise ValueError("TOKEN tidak ditemukan! Pastikan sudah diset di Railway.")
-
-# Intents untuk membaca pesan
-intents = discord.Intents.default()
-intents.messages = True
-intents.message_content = True  # Tambahkan ini agar bot bisa membaca pesan
-
-# Buat objek bot
+# Inisialisasi bot
+intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Variabel untuk menyimpan status mirror
-mirror_active = True  
+# Simpan deskripsi nama user
+user_descriptions = {
+    "fatih": "Fatih itu anaknya pendiam tapi aktif kok.",
+    "rafi": "Rafi itu orangnya suka bercanda, tapi baik.",
+    "budi": "Budi jago coding, sering bantu temen-temennya."
+}
 
-# Event saat bot sudah online
+# Fungsi untuk komunikasi dengan Gemini AI
+def chat_gemini(prompt):
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    data = {"contents": [{"parts": [{"text": prompt}]}]}
+    
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    
+    if response.status_code == 200:
+        result = response.json()
+        return result["candidates"][0]["content"]["parts"][0]["text"]
+    else:
+        return f"Error: {response.status_code} - {response.text}"
+
+# Event ketika bot berhasil login
 @bot.event
 async def on_ready():
-    print(f"Bot {bot.user} sudah online!")
+    print(f'Bot {bot.user} sudah online!')
 
-# Command untuk menyalakan mirroring
-@bot.command()
-async def on(ctx):
-    global mirror_active
-    mirror_active = True
-    nickname = ctx.author.display_name  
-    await ctx.send(f"✅ CIEEEE AKTIFIN AKU, KANGEN YAAA? Halo, {nickname}! SEMOGA HARIMU BAIK BAIK AJA YA😊")
-    
-# Command untuk menanggapi panggilan "hai"
-@bot.command()
-async def hai(ctx):
-    global mirror_active
-    mirror_active = False 
-    await ctx.send(f"Hai {ctx.author.display_name}, Ngapain manggil-manggil, urus sono pacar lo! Oh ya lupa, Lo kan gapunya pacar HAHAHAHAHA")
-
-# Command untuk mematikan mirroring
-@bot.command()
-async def off(ctx):
-    global mirror_active
-    mirror_active = False
-    await ctx.send(f"❌ PAYPAYYY {ctx.author.display_name}, KALO KANGEN AKTIFIN AKU AJA YA!")
-
-# Event untuk mirror pesan
+# Event untuk mirroring semua pesan dalam server
 @bot.event
 async def on_message(message):
-    global mirror_active
+    if message.author == bot.user:
+        return
     
-    # Pastikan bot tetap bisa menjalankan command lainnya
+    # Mirror pesan
+    await message.channel.send(f"{message.author.display_name}: {message.content}")
+    
+    # Cek apakah user bertanya nama bot
+    if "nama kamu siapa" in message.content.lower():
+        await message.channel.send("Namaku adalah Johny Sins!")
+
+    # Lanjutkan ke command bot lainnya
     await bot.process_commands(message)
+
+# Command untuk tanya AI
+@bot.command()
+async def tanya(ctx, *, pertanyaan):
+    jawaban = chat_gemini(pertanyaan)
+    await ctx.send(jawaban)
+
+# Command untuk cek deskripsi user
+@bot.command()
+async def siapa(ctx, nama: str):
+    nama = nama.lower()
+    if nama in user_descriptions:
+        await ctx.send(user_descriptions[nama])
+    else:
+        await ctx.send(f"Aku belum tahu tentang {nama}, kasih tahu aku dong!")
 
 # Jalankan bot
 bot.run(TOKEN)
