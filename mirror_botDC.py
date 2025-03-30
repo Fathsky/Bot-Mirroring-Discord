@@ -73,6 +73,17 @@ async def on_message(message):
     if message.author == bot.user:
         return
     
+    # Cek apakah user bertanya nama bot
+    if "nama kamu siapa" in message.content.lower():
+        sent_message = await message.channel.send("Nama gue adalah Johny Sins, Sang aktor bintang Pornografi terkenal Diseluruh dunia, HAHAHAHAHA 😜!")
+        return
+
+    # Cek apakah user bertanya tentang developer
+    if any(phrase in message.content.lower() for phrase in ["siapa yang develop", "siapa yang buat", "siapa developermu", "siapa yang bikin"]):
+        developer_id = "742535420461711481"
+        sent_message = await message.channel.send(f"Yang develop aku namanya Fatih <@!{developer_id}>")
+        return
+    
     # Cek apakah channel ini dikonfigurasi untuk mirror
     if message.channel.id in mirror_configs:
         config = mirror_configs[message.channel.id]
@@ -121,7 +132,7 @@ async def siapa(ctx, nama: str):
     if nama in user_descriptions:
         await ctx.send(user_descriptions[nama])
     else:
-        await ctx.send(f"Aku belum tahu tentang {nama}, kasih tahu aku dong!")
+        await ctx.send(f"Aku belum kenal sama {nama}, kasih tau aku dong biar aku kenal dia!")
 
 # Command untuk reset riwayat chat
 @bot.command()
@@ -195,7 +206,7 @@ class MirrorView(discord.ui.View):
 @bot.command()
 async def mirror(ctx):
     view = MirrorView()
-    await ctx.send("Klik button di bawah untuk setup mirror channel:", view=view)
+    await ctx.send("Klik button di bawah untuk buat Mirror Messages:", view=view)
 
 # Jalankan bot
 bot.run(TOKEN)
