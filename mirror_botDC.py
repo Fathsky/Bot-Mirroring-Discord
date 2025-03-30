@@ -161,7 +161,7 @@ async def reset(ctx):
 # Modal untuk input mirror settings
 class MirrorModal(discord.ui.Modal):
     def __init__(self):
-        super().__init__(title="Setup Mirror Channel")
+        super().__init__(title="Setup Mirror Messages Kamu!")
         
         self.add_item(discord.ui.TextInput(
             label="Channel ID Sumber",
