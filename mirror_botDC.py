@@ -73,15 +73,29 @@ async def on_message(message):
     if message.author == bot.user:
         return
     
+    # Cek jika pesan adalah reply ke bot
+    if message.reference:
+        try:
+            # Ambil pesan yang di-reply
+            replied_msg = await message.channel.fetch_message(message.reference.message_id)
+            # Cek apakah pesan yang di-reply adalah pesan dari bot
+            if replied_msg.author == bot.user:
+                # Generate respons dari AI
+                jawaban = chat_gemini(message.content, str(message.author.id))
+                await message.channel.send(jawaban)
+                return
+        except discord.NotFound:
+            pass  # Pesan yang di-reply tidak ditemukan
+    
     # Cek apakah user bertanya nama bot
     if "nama kamu siapa" in message.content.lower():
-        sent_message = await message.channel.send("Nama gue adalah Johny Sins, Sang aktor bintang Pornografi terkenal Diseluruh dunia, HAHAHAHAHA 😜!")
+        await message.channel.send("Nama gue adalah Johny Sins, Sang aktor bintang Pornografi terkenal Diseluruh dunia, HAHAHAHAHA 😜!")
         return
 
     # Cek apakah user bertanya tentang developer
     if any(phrase in message.content.lower() for phrase in ["siapa yang develop", "siapa yang buat", "siapa developermu", "siapa yang bikin"]):
         developer_id = "742535420461711481"
-        sent_message = await message.channel.send(f"Yang develop aku namanya Fatih <@!{developer_id}>")
+        await message.channel.send(f"Yang develop aku namanya Fatih <@!{developer_id}>")
         return
     
     # Cek apakah channel ini dikonfigurasi untuk mirror
