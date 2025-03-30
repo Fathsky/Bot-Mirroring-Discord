@@ -95,7 +95,7 @@ async def on_message(message):
     # Cek apakah user bertanya tentang developer
     if any(phrase in message.content.lower() for phrase in ["siapa yang develop", "siapa yang buat", "siapa developermu", "siapa yang bikin"]):
         developer_id = "742535420461711481"
-        await message.channel.send(f"Yang develop aku namanya Fatih <@!{developer_id}>")
+        await message.channel.send(f"Yang develop aku namanya Fatih, Sang pendekar yang kuat di Bumi ini HAHAHAHA 😎😎. BTW kalo mau kenalan sama dia langsung aja dm dia di discord, kebetulan owner Gue lagi jomblo Hihihi, butuh banget sosok Sang Kekasih itu dia !! <@!{developer_id}>")
         return
     
     # Cek apakah channel ini dikonfigurasi untuk mirror
