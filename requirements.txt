@@ -2,6 +2,6 @@ discord.py>=2.3.0
 python-dotenv
 requests
 aiohttp
-yt-dlp==2023.12.30
+yt-dlp==2024.04.09
 spotipy
 PyNaCl
