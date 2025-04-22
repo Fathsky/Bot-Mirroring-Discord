@@ -1,5 +1,2 @@
 [build]
-nixpacksPlan = "default"
-
-[build.env]
-NIXPACKS_PKG_INSTALLS = "ffmpeg"
+nixpacksPlan = { phases = { install = { nixPkgs = ["ffmpeg", "libnacl", "libsodium"] } } }
