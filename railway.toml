@@ -1,5 +1,3 @@
 [build]
-nixpacksPlan = "default"
-
 [build.env]
 NIXPACKS_PKG_INSTALLS = "ffmpeg libsodium"
