@@ -1,1 +1,1 @@
-worker: python mirror_botDC.py
+worker: python app.py
