@@ -1,2 +1,8 @@
+[build]
+  builder = "nixpacks"
+
 [phases.setup]
-nixPkgs = ["ffmpeg", "libopus", "libsodium"]
+nixPkgs = ["python311", "ffmpeg", "libsodium", "libopus"]
+
+[start]
+cmd = "python3 app.py"
