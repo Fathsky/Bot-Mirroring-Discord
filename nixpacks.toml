@@ -1,5 +1,5 @@
 [build]
-  builder = "nixpacks"
+builder = "nixpacks"
 
 [phases.setup]
 nixPkgs = ["python311", "ffmpeg", "libsodium", "libopus"]
